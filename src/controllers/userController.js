@@ -15,32 +15,10 @@ exports.getAllDoctors = async (req, res) => {
   }
 };
 
-// Get doctors by department
-exports.getDoctorsByDepartment = async (req, res) => {
-  try {
-    const { department } = req.params;
-
-    const doctors = await User.find({
-      role: 'doctor',
-      department,
-      isActive: true,
-    });
-
-    res.status(200).json({
-      success: true,
-      count: doctors.length,
-      data: doctors,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
 // Get doctor details
 exports.getDoctorDetails = async (req, res) => {
   try {
     const { doctorId } = req.params;
-
     const doctor = await User.findById(doctorId);
 
     if (!doctor || doctor.role !== 'doctor') {
@@ -70,11 +48,10 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
-// Get all patients (Users)
+// Get all patients
 exports.getAllPatients = async (req, res) => {
   try {
     const patients = await User.find({ role: 'user', isActive: true });
-
     res.status(200).json({
       success: true,
       count: patients.length,
@@ -85,11 +62,10 @@ exports.getAllPatients = async (req, res) => {
   }
 };
 
-// Get patient details (User)
+// Get patient details
 exports.getPatientDetails = async (req, res) => {
   try {
     const { patientId } = req.params;
-
     const patient = await User.findById(patientId);
 
     if (!patient || patient.role !== 'user') {

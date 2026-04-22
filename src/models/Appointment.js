@@ -24,9 +24,6 @@ const appointmentSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Please provide reason for appointment'],
     },
-    symptoms: {
-      type: String,
-    },
     status: {
       type: String,
       enum: ['pending', 'approved', 'rejected', 'confirmed', 'cancelled', 'completed'],
@@ -34,14 +31,6 @@ const appointmentSchema = new mongoose.Schema(
     },
     notes: {
       type: String,
-    },
-    department: {
-      type: String,
-      required: true,
-    },
-    duration: {
-      type: Number,
-      default: 30,
     },
   },
   { timestamps: true }
@@ -51,10 +40,10 @@ const appointmentSchema = new mongoose.Schema(
 appointmentSchema.pre(/^find/, function() {
   this.populate({
     path: 'patientId',
-    select: 'name email phone',
+    select: 'name email',
   }).populate({
     path: 'doctorId',
-    select: 'name department',
+    select: 'name',
   });
 });
 

@@ -4,9 +4,7 @@ const User = require('../models/User');
 // Get all appointments
 exports.getAllAppointments = async (req, res) => {
   try {
-    const appointments = await Appointment.find()
-      .populate('patientId')
-      .populate('doctorId');
+    const appointments = await Appointment.find().sort({ appointmentDate: -1 });
 
     res.status(200).json({
       success: true,
@@ -24,10 +22,7 @@ exports.getUserAppointments = async (req, res) => {
     const { userId } = req.params;
     const appointments = await Appointment.find({
       $or: [{ patientId: userId }, { doctorId: userId }],
-    })
-      .populate('patientId')
-      .populate('doctorId')
-      .sort({ appointmentDate: 1 });
+    }).sort({ appointmentDate: 1 });
 
     res.status(200).json({
       success: true,
@@ -42,24 +37,22 @@ exports.getUserAppointments = async (req, res) => {
 // Create appointment
 exports.createAppointment = async (req, res) => {
   try {
-    const { patientId, doctorId, appointmentDate, timeSlot, reason, symptoms, department } = req.body;
+    const { patientId, doctorId, appointmentDate, timeSlot, reason } = req.body;
 
-    // Validate doctor exists and is a doctor
     const doctor = await User.findById(doctorId);
     if (!doctor || doctor.role !== 'doctor') {
       return res.status(404).json({ message: 'Doctor not found' });
     }
 
-    // Check for appointment conflicts
     const existingAppointment = await Appointment.findOne({
       doctorId,
       appointmentDate,
       timeSlot,
-      status: { $ne: 'cancelled' },
+      status: { $ne: 'rejected' }, // Allow booking if previously rejected
     });
 
     if (existingAppointment) {
-      return res.status(400).json({ message: 'Time slot already booked' });
+      return res.status(400).json({ message: 'This time slot is already booked' });
     }
 
     const appointment = new Appointment({
@@ -68,16 +61,13 @@ exports.createAppointment = async (req, res) => {
       appointmentDate,
       timeSlot,
       reason,
-      symptoms,
-      department,
-      status: 'pending',
     });
 
     await appointment.save();
 
     res.status(201).json({
       success: true,
-      message: 'Appointment created successfully',
+      message: 'Appointment booked successfully',
       data: appointment,
     });
   } catch (error) {
@@ -95,9 +85,7 @@ exports.updateAppointment = async (req, res) => {
       appointmentId,
       { status, notes, timeSlot, appointmentDate },
       { new: true, runValidators: true }
-    )
-      .populate('patientId')
-      .populate('doctorId');
+    );
 
     if (!appointment) {
       return res.status(404).json({ message: 'Appointment not found' });
@@ -122,9 +110,7 @@ exports.cancelAppointment = async (req, res) => {
       appointmentId,
       { status: 'cancelled' },
       { new: true }
-    )
-      .populate('patientId')
-      .populate('doctorId');
+    );
 
     if (!appointment) {
       return res.status(404).json({ message: 'Appointment not found' });
@@ -140,23 +126,22 @@ exports.cancelAppointment = async (req, res) => {
   }
 };
 
-// Get available time slots for doctor
+// Get available slots (Simulated for now)
 exports.getAvailableSlots = async (req, res) => {
   try {
     const { doctorId, date } = req.query;
-
-    const bookedSlots = await Appointment.find({
+    // For simplicity, returning a standard set of slots
+    const slots = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'];
+    
+    // Filter out already booked slots
+    const bookedAppointments = await Appointment.find({
       doctorId,
-      appointmentDate: {
-        $gte: new Date(date),
-        $lt: new Date(new Date(date).getTime() + 24 * 60 * 60 * 1000),
-      },
-      status: { $ne: 'cancelled' },
+      appointmentDate: date,
+      status: { $nin: ['cancelled', 'rejected'] }
     });
-
-    const allSlots = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'];
-    const bookedTimes = bookedSlots.map((apt) => apt.timeSlot);
-    const availableSlots = allSlots.filter((slot) => !bookedTimes.includes(slot));
+    
+    const bookedSlots = bookedAppointments.map(appt => appt.timeSlot);
+    const availableSlots = slots.filter(slot => !bookedSlots.includes(slot));
 
     res.status(200).json({
       success: true,
@@ -167,14 +152,11 @@ exports.getAvailableSlots = async (req, res) => {
   }
 };
 
-// Get appointment details
+// Get single appointment details
 exports.getAppointmentDetails = async (req, res) => {
   try {
     const { appointmentId } = req.params;
-
-    const appointment = await Appointment.findById(appointmentId)
-      .populate('patientId')
-      .populate('doctorId');
+    const appointment = await Appointment.findById(appointmentId);
 
     if (!appointment) {
       return res.status(404).json({ message: 'Appointment not found' });

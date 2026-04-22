@@ -11,7 +11,15 @@ const userRoutes = require('./src/routes/userRoutes');
 const app = express();
 
 // Middleware
-app.use(cors({ origin: process.env.CORS_ORIGIN }));
+app.use(cors({
+  origin: [
+    "https://mexpertz-hospital-appointment-system.vercel.app",
+    "http://localhost:5173",
+    process.env.CORS_ORIGIN
+  ].filter(Boolean),
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
