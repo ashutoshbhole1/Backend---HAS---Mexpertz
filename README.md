@@ -1,73 +1,32 @@
-# Hospital Appointment System - Backend
+# ⚙️ Hospital Appointment System - Backend API
 
-## Overview
-Express.js backend API for the hospital appointment system with user authentication and appointment management.
+## 🌟 Overview
+The powerhouse behind the Hospital Appointment System. This Express.js server provides a robust and secure RESTful API to manage authentication, appointments, and medical staff data.
 
-## Features
-- User authentication (register/login)
-- Role-based access control (Patient, Doctor, Admin)
-- Appointment management (CRUD operations)
-- Available time slots tracking
-- Doctor and patient management
+---
 
-## Tech Stack
-- Node.js
-- Express.js
-- MongoDB
-- JWT for authentication
-- bcryptjs for password hashing
+## 🛠️ Tech Stack
 
-## Installation
+<p align="left">
+  <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node" />
+  <img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express" />
+  <img src="https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB" />
+  <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white" alt="JWT" />
+</p>
 
-```bash
-npm install
-```
+- **Runtime:** Node.js
+- **Framework:** Express.js
+- **Database:** MongoDB (Mongoose)
+- **Security:** JWT (JSON Web Tokens) & BcryptJS
+- **Validation:** Express Validator
 
-## Environment Setup
+---
 
-Copy `.env.example` to `.env` and update values:
+## 🚀 Features
 
-```
-MONGODB_URI=mongodb://localhost:27017/hospital_appointments
-JWT_SECRET=your_secret_key_here
-JWT_EXPIRE=7d
-PORT=5000
-NODE_ENV=development
-CORS_ORIGIN=http://localhost:3000
-```
+- **🛡️ Secure Auth** - JWT-based authentication with role-based access control.
+- **📅 Appointment Engine** - Sophisticated logic for managing time slots and avoiding overlaps.
+- **👥 User Management** - Specialized profiles for Patients, Doctors, and Administrators.
+- **🔍 Advanced Queries** - Filter doctors by specialty, department, and availability.
+- **📁 File Handling** - Support for profile images and medical documentation.
 
-## Running the Server
-
-Development:
-```bash
-npm run dev
-```
-
-Production:
-```bash
-npm start
-```
-
-## API Endpoints
-
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
-- `GET /api/auth/me` - Get current user (protected)
-- `PUT /api/auth/profile` - Update user profile (protected)
-
-### Appointments
-- `GET /api/appointments` - Get all appointments (protected)
-- `GET /api/appointments/:appointmentId` - Get appointment details (protected)
-- `GET /api/appointments/user/:userId` - Get user appointments (protected)
-- `POST /api/appointments` - Create appointment (protected)
-- `PUT /api/appointments/:appointmentId` - Update appointment (protected)
-- `PUT /api/appointments/:appointmentId/cancel` - Cancel appointment (protected)
-- `GET /api/appointments/available-slots` - Get available time slots
-
-### Users
-- `GET /api/users/doctors` - Get all doctors
-- `GET /api/users/doctors/department/:department` - Get doctors by department
-- `GET /api/users/doctors/:doctorId` - Get doctor details
-- `GET /api/users/patients` - Get all patients (protected, admin/doctor only)
-- `GET /api/users/patients/:patientId` - Get patient details (protected)
