@@ -3,6 +3,7 @@
 ## 🌟 Overview
 The powerhouse behind the Hospital Appointment System. This Express.js server provides a robust and secure RESTful API to manage authentication, appointments, and medical staff data.
 
+![Banner](./src/assets/readme_image_hero_section.png)
 ---
 
 ## 🛠️ Tech Stack
